@@ -58,5 +58,16 @@ model Account {
   @@id([provider, providerAccountId])
 }
 
+model VerificationToken {
+  id      String   @id @default(cuid())
+  email   String
+  token   String   @unique
+  expires DateTime
+
+  // only one specific token per email
+  @@unique([email, token])
+}
+
 // npx prisma generate
 // npx prisma db push
+// npx prisma studio

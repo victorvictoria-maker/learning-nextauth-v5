@@ -13,7 +13,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   },
   events: {
     async linkAccount({ user }) {
-      // note - sign up with credentails does not verify email yet, just github and google
+      // note - sign up with credentials does not verify email yet, just github and google
       await db.user.update({
         where: { id: user.id },
         data: { emailVerified: new Date() },
@@ -21,17 +21,20 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     },
   },
   // callbacks are just what happens after user logs in or logs out
+  // ensure you match the logic in your server actions inside of callback because it serves as the fallback
   callbacks: {
-    // a user cant sign if they have not verified their email
-    // async signIn({ user }: any) {
-    //   const existingUser = await getUserById(user.id);
+    // a user cant sign if they have not verified their email - this is a fallback that wont allow user to login
+    async signIn({ user, account }: any) {
+      //  allow OAuth without email verification
+      if (account?.provider !== "credentials") return true;
 
-    //   if (!existingUser || !existingUser.emailVerified) {
-    //     return false;
-    //   }
+      const existingUser = await getUserById(user.id);
 
-    //   return true;
-    // },
+      // prevent sigin without verification
+      if (!existingUser?.emailVerified) return false;
+
+      return true;
+    },
     async session({ token, session }) {
       if (token.sub && session.user) {
         session.user.id = token.sub;
