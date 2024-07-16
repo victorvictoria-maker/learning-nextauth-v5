@@ -7,6 +7,19 @@ import { getUserById } from "./data/user";
 import { UserRole } from "@prisma/client";
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
+  pages: {
+    signIn: "/auth/login",
+    error: "/auth/error",
+  },
+  events: {
+    async linkAccount({ user }) {
+      // note - sign up with credentails does not verify email yet, just github and google
+      await db.user.update({
+        where: { id: user.id },
+        data: { emailVerified: new Date() },
+      });
+    },
+  },
   // callbacks are just what happens after user logs in or logs out
   callbacks: {
     // a user cant sign if they have not verified their email

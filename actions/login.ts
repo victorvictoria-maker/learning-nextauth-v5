@@ -28,6 +28,8 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
       };
     }
 
+    // return { error };
+
     // if (error instanceof AuthError) {
     //   console.log("Error type: ", error.type);
     //   switch (error.type) {
