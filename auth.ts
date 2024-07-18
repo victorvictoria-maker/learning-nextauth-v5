@@ -13,7 +13,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   },
   events: {
     async linkAccount({ user }) {
-      // note - sign up with credentials does not verify email yet, just github and google
+      // note - sign up with credentials has not verified email yet, only those using github and google to sgnin has verified email
       await db.user.update({
         where: { id: user.id },
         data: { emailVerified: new Date() },
